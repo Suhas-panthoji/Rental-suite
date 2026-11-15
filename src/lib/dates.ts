@@ -61,6 +61,11 @@ export function formatDateIN(iso: string): string {
   return `${d} ${months[Number(m) - 1]} ${y}`;
 }
 
+export function addDaysISO(iso: string, days: number): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+}
+
 export function formatPeriod(period: string): string {
   if (!period) return "";
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
