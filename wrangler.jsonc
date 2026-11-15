@@ -1,0 +1,23 @@
+// Cloudflare Workers configuration for Rental Suite (Next.js via @opennextjs/cloudflare)
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rental-suite",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rental-suite",
+      // Placeholder — replace with the real ID after `wrangler d1 create rental-suite`
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  // Non-secret vars; secrets like AUTH_SECRET go in .dev.vars (local) / `wrangler secret put` (prod)
+  "vars": {}
+}
