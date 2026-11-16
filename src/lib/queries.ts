@@ -188,3 +188,39 @@ export async function getDuesWithContext(statusFilter?: string) {
   const names = await primaryTenantNames([...new Set(rows.map((r) => r.agreementId))]);
   return rows.map((r) => ({ ...r, tenantName: names[r.agreementId] ?? "—" }));
 }
+
+/** Every unit with live occupancy: tenant, active agreement, effective rent */
+export async function getUnitsOverview() {
+  const db = getDb();
+  const unitRows = await db
+    .select({
+      id: units.id,
+      label: units.label,
+      type: units.type,
+      status: units.status,
+      expectedRentPaise: units.expectedRentPaise,
+      propertyId: properties.id,
+      propertyName: properties.name,
+    })
+    .from(units)
+    .innerJoin(properties, eq(units.propertyId, properties.id))
+    .orderBy(asc(properties.name), asc(units.label));
+
+  const activeAgs = await db
+    .select({ id: agreements.id, unitId: agreements.unitId, rentPaise: agreements.rentPaise })
+    .from(agreements)
+    .where(eq(agreements.status, "active"));
+  const agByUnit = new Map(activeAgs.map((a) => [a.unitId, a]));
+  const names = await primaryTenantNames(activeAgs.map((a) => a.id));
+
+  return unitRows.map((u) => {
+    const ag = agByUnit.get(u.id);
+    return {
+      ...u,
+      occupied: Boolean(ag),
+      activeAgreementId: ag?.id ?? null,
+      rentPaise: ag ? ag.rentPaise : u.expectedRentPaise,
+      tenantName: ag ? (names[ag.id] ?? null) : null,
+    };
+  });
+}

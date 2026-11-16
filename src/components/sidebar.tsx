@@ -46,7 +46,12 @@ export function Sidebar({ userName }: { userName: string }) {
           ))}
         </nav>
         <div className="border-t border-slate-800 pt-3">
-          <div className="mb-2 px-2 text-xs text-slate-500">{userName}</div>
+          <div className="mb-2 flex items-center gap-2 px-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+              {userName.charAt(0).toUpperCase()}
+            </div>
+            <span className="truncate text-xs font-medium text-slate-300">{userName}</span>
+          </div>
           <form action={logoutAction}>
             <button
               type="submit"
